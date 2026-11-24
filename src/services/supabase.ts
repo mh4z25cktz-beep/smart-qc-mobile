@@ -27,8 +27,8 @@ export const TABLE_NAME = "qc_data";
 
 const HEADERS: Record<string, string> = {
   "apikey": SUPABASE_KEY,
-  "Authorization": `Bearer ${SUPABASE_KEY}`,
   "Content-Type": "application/json",
+  ...(SUPABASE_KEY.startsWith("eyJ") ? { "Authorization": `Bearer ${SUPABASE_KEY}` } : {}),
 };
 
 /**
@@ -163,10 +163,17 @@ export async function checkSupabaseConnection(): Promise<ConnectionStatus> {
         lastChecked: new Date(),
       };
     } else {
+      let detail = '';
+      try {
+        const errData = await res.json();
+        detail = errData?.message || errData?.hint || '';
+      } catch {}
       return {
         connected: false,
         isFallback: true,
-        message: `HTTP ${res.status}: 로컬 폴백 캐시 동작 중`,
+        message: detail
+          ? `Supabase [${res.status}]: ${detail} (폴백 캐시 동작)`
+          : `HTTP ${res.status}: 로컬 폴백 캐시 동작 중`,
         lastChecked: new Date(),
       };
     }
