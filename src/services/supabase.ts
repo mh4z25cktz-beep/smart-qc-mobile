@@ -28,7 +28,6 @@ export const TABLE_NAME = "qc_data";
 const HEADERS: Record<string, string> = {
   "apikey": SUPABASE_KEY,
   "Content-Type": "application/json",
-  ...(SUPABASE_KEY.startsWith("eyJ") ? { "Authorization": `Bearer ${SUPABASE_KEY}` } : {}),
 };
 
 /**
